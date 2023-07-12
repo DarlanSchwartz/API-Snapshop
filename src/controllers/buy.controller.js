@@ -26,3 +26,18 @@ export async function newBuy(req, res){
         res.status(500).send(err.message);
     }
 }
+
+export async function shoppingCart(req, res){
+    const {userId} = res.locals;
+    const idProduct = req.params.id;
+
+    try{
+        const product = await db.collection('products').findOne({_id: new ObjectId(idProduct)});
+        if(!product) return res.status(404).send("Porduto não encontrado no sistema! ):")
+
+        await db.collection('shoppingCart').insertOne({userId, idProduct});
+        res.sendStatus(200);
+    }catch(err){
+        res.status(500).send(err.message);
+    }
+}
