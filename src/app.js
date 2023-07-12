@@ -2,7 +2,7 @@
 import express, { json } from 'express';
 import cors from 'cors';
 import router from './routes/index.routes.js';
-import { db } from './database/database.connection.js';
+import db from './database/database.connection.js';
 
 
 const app = express();
