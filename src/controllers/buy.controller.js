@@ -41,3 +41,14 @@ export async function shoppingCart(req, res){
         res.status(500).send(err.message);
     }
 }
+
+export async function productsBoughtByYou(req, res){
+    const {userId} = res.locals;
+
+    try{
+        const products = await db.collection('products').find({userId}).toArray()
+        res.send(products);
+    }catch(err){
+        res.status(500).send(err.message);
+    }
+}

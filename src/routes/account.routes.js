@@ -6,7 +6,7 @@ import { SignInSchema, SignUpSchema } from "../schemas/account.schemas.js";
 
 const accountRouter = Router();
 
-accountRouter.post('/cadastro', validateAuth, validateSchema(SignUpSchema), signUp);
+accountRouter.post('/cadastro', validateSchema(SignUpSchema), signUp);
 accountRouter.post('/login', validateSchema(SignInSchema), signIn);
 accountRouter.post('/logout', validateAuth, logout);
 
