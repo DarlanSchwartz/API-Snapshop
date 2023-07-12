@@ -5,9 +5,8 @@ import db from '../database/database.connection.js';
 
 export async function newProduct(req, res) {
 
-    const product = { ...req.body, date: dayjs().format('DD/MM/YY') };
-
     try {
+        const product = { ...req.body, date: dayjs().format(),userId:res.locals.userId};
         await db.collection('products').insertOne(product);
         return res.status(201).send('Produto criado com sucesso!');
 
@@ -40,7 +39,7 @@ export async function editProduct(req, res) {
     const { id } = req.params;
     if (!id || id == '') return res.status(404).send('Falha ao editar produto: Produto não encontrado!');
 
-    const product = { ...req.body, date: dayjs().format('DD/MM/YY') };
+    const product = { ...req.body, date: dayjs().format() };
 
     try {
         const result = await db.collection('products').findOne({_id:new ObjectId(id)});
