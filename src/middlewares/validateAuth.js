@@ -14,5 +14,5 @@ export default async function validateAuth(req, res, next) {
   //   res.status(500).send(err.message);
   // }
   
-  // next();
+  next();
 }
