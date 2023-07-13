@@ -3,12 +3,12 @@ import db from '../database/database.connection.js';
 
 export async function newBuy(req, res){
     const {userId} = res.locals;
-    const {amount} = req.body;
+    const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder} = req.body;
     const idProduct = req.params.id;
     
-
     try{
         const product = await db.collection('products').findOne({_id: new ObjectId(idProduct)});
+
         if(!product) return res.status(404).send("Porduto não encontrado no sistema! ):")
        
         const rest = product.stock - Number(amount);
@@ -20,7 +20,12 @@ export async function newBuy(req, res){
         }else{
             await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {stock: rest}});
         }
-        await db.collection('buys').insertOne({userId, idProduct, amount});
+        if(paymentMethod === 'pix' || paymentMethod === 'boleto'){
+            await db.collection('buys').insertOne({userId, idProduct, amount, cep, city, neighborhood, state, street, number, paymentMethod});
+        }else{
+            await db.collection('buys').insertOne({userId, idProduct, amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder});
+        }
+        
         res.sendStatus(200);
     }catch(err){
         res.status(500).send(err.message);
