@@ -6,10 +6,9 @@ import { newBuySchema } from "../schemas/buy.schemas.js";
 
 const buyRouter = Router();
 
-buyRouter.use(validateAuth);
+buyRouter.post('/comprar/:id', validateAuth, validateSchema(newBuySchema), newBuy);
+buyRouter.post('/carrinho/:id', validateAuth, shoppingCart);
+buyRouter.post('/minhas-compras', validateAuth, productsBoughtByYou);
+buyRouter.post('/meus-produtos', validateAuth, productsRegisteredByUser);
 
-buyRouter.post('/comprar/:id', validateSchema(newBuySchema), newBuy);
-buyRouter.post('/carrinho/:id', shoppingCart);
-buyRouter.post('/minhas-compras', productsBoughtByYou)
-buyRouter.post('/meus-produtos', productsRegisteredByUser)
 export default buyRouter;

@@ -60,7 +60,8 @@ export async function viewProduct(req, res) {
     if (!id || id == '') return res.status(404).send('Produto não encontrado!');
 
     try {
-        const product = await db.collection('products').findOne({ _id: new ObjectId(id) });
+        const product = await db.collection('products').findOne({ _id: new ObjectId(id)});
+        if(!product) return res.sendStatus(404);
         return res.status(200).send(product);
     } catch (error) {
         console.log(error);
