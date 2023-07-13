@@ -8,4 +8,6 @@ export const newProductSchema = joi.object({
     stock: joi.number().required(),
     category: joi.string().required(),
     picture: joi.string().required(),
+    is_new: joi.boolean().required(),
+    shipment:joi.boolean().required()
 });
