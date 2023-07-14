@@ -47,6 +47,28 @@ export async function shoppingCart(req, res){
     }
 }
 
+export async function getProductsShoppingCart(req, res){
+    const {userId} = res.locals;
+
+    try{
+        const products = await db.collection('shoppingCart').find({userId: new ObjectId(userId)}).toArray()
+        
+        const myProducts = [];
+        
+        let i = 0;
+        do{
+            const product = products[i]
+            myProducts.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}))
+            i++
+        } while(i < products.length);
+
+        res.send(myProducts);
+        
+    }catch(err){
+        res.status(500).send(err.message);
+    }
+}
+
 export async function productsBoughtByYou(req, res){
     const {userId} = res.locals;
     
