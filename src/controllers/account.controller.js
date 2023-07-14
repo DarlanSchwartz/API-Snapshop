@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import { v4 as uuid } from "uuid"
 import db from "../database/database.connection.js"
+import { ObjectId } from "mongodb"
 
 export async function signUp(req, res) {
     const { name, email, password, photo } = req.body
@@ -45,6 +46,22 @@ export async function logout(req, res) {
     try {
         await db.collection("sessions").deleteOne({ token })
         res.sendStatus(200)//succefully logout
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+}
+
+
+
+export async function getUserInfo(req, res) {
+    const authorization = req.headers.authorization;
+
+    if(!authorization) return res.sendStatus(404);
+
+    try {
+        const userId = await db.collection("sessions").findOne({ token:authorization });
+        const user = await db.collection('users').findOne({_id:userId.userId});
+        res.status(200).send({token:authorization,userName:user.name,photo:user.photo});
     } catch (err) {
         res.status(500).send(err.message)
     }
