@@ -76,12 +76,16 @@ export async function getUserInfo(req, res) {
             } while(i < products.length);
 
             for (let i = 0; i < products.length; i++) {
-                myProducts[i].quantity = products[i].quantity;
+               if(myProducts[i])
+               {
+                    myProducts[i].quantity = products[i].quantity;
+               }
             }
         }
         
         return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo},items:myProducts,amountOfProducts});
     } catch (err) {
+        console.log(err);
         res.status(500).send(err.message)
     }
 }
