@@ -62,7 +62,9 @@ export async function getUserInfo(req, res) {
         const userId = await db.collection("sessions").findOne({ token:authorization });
         const user = await db.collection('users').findOne({_id:userId.userId});
         const products = await db.collection('shoppingCart').find({userId:userId.userId}).toArray();
+        const amountOfProducts = (await db.collection('products').find().toArray()).length;
         const myProducts = [];
+
         
         if(products.length > 0)
         {
@@ -78,7 +80,7 @@ export async function getUserInfo(req, res) {
             }
         }
         
-        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo},items:myProducts});
+        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo},items:myProducts,amountOfProducts});
     } catch (err) {
         res.status(500).send(err.message)
     }
