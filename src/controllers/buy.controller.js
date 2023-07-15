@@ -3,7 +3,7 @@ import db from '../database/database.connection.js';
 
 export async function newBuy(req, res){
     const {userId} = res.locals;
-    const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder} = req.body;
+    const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder,price} = req.body;
     const idProduct = req.params.id;
     
     try{
@@ -21,9 +21,9 @@ export async function newBuy(req, res){
             await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {stock: rest}});
         }
         if(paymentMethod === 'pix' || paymentMethod === 'boleto'){
-            await db.collection('buys').insertOne({userId, idProduct, amount, cep, city, neighborhood, state, street, number, paymentMethod});
+            await db.collection('buys').insertOne({userId, idProduct, amount,price, cep, city, neighborhood, state, street, number, paymentMethod});
         }else{
-            await db.collection('buys').insertOne({userId, idProduct, amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder});
+            await db.collection('buys').insertOne({userId, idProduct, amount, price, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder});
         }
         
         res.sendStatus(200);
@@ -64,12 +64,16 @@ export async function getProductsShoppingCart(req, res){
         } while(i < products.length);
 
         for (let i = 0; i < products.length; i++) {
-            myProducts[i].quantity = products[i].quantity;
+           if(myProducts[i])
+           {
+                myProducts[i].quantity = products[i].quantity;
+           }
         }
         
         return res.send(myProducts);
         
     }catch(err){
+        console.log(err);
        return  res.status(500).send(err.message);
     }
 }
