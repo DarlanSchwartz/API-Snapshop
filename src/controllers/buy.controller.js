@@ -28,7 +28,8 @@ export async function newBuy(req, res){
         
         res.sendStatus(200);
     }catch(err){
-        res.status(500).send(err.message);
+        console.log(err);
+        return res.status(500).send(err.message);
     }
 }
 
@@ -45,7 +46,8 @@ export async function shoppingCart(req, res){
         await db.collection('shoppingCart').insertOne({userId, idProduct, quantity});
         res.sendStatus(200);
     }catch(err){
-        res.status(500).send(err.message);
+        console.log(err);
+        return res.status(500).send(err.message);
     }
 }
 
@@ -59,12 +61,16 @@ export async function getProductsShoppingCart(req, res){
         let i = 0;
         do{
             const product = products[i];
-            myProducts.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}));
+            const foundProd = await db.collection('products').findOne({_id: new ObjectId(product.idProduct)});
+            if(foundProd) // PREVENT BUG WHEN FOUND PRODUCT IS NULL
+            {
+                myProducts.push(foundProd);
+            }
             i++;
         } while(i < products.length);
 
         for (let i = 0; i < products.length; i++) {
-           if(myProducts[i])
+           if(myProducts[i]) // PREVENT BUG WHEN FOUND PRODUCT IS NULL
            {
                 myProducts[i].quantity = products[i].quantity;
            }
@@ -74,7 +80,7 @@ export async function getProductsShoppingCart(req, res){
         
     }catch(err){
         console.log(err);
-       return  res.status(500).send(err.message);
+        return  res.status(500).send(err.message);
     }
 }
 
@@ -85,9 +91,10 @@ export async function deleteProductByCart(req, res){
     try{
         const d = await db.collection('shoppingCart').deleteOne({idProduct: id, userId})
         console.log(d)
-        res.sendStatus(200);
+        return res.sendStatus(200);
     }catch(err){
-        res.status(500).send(err.message)
+        console.log(err);
+        return res.status(500).send(err.message)
     }
 }
 
@@ -114,7 +121,8 @@ export async function productsBoughtByYou(req, res){
 
         return res.send(myBuys);
     }catch(err){
-        res.status(500).send(err.message);
+        console.log(err);
+        return res.status(500).send(err.message);
     }
 }
 
@@ -123,8 +131,8 @@ export async function productsRegisteredByUser(req, res){
 
     try{
         const products = await db.collection('products').find({userId}).toArray()
-        res.send(products);
+        return res.send(products);
     }catch(err){
-        res.status(500).send(err.message);
+        return res.status(500).send(err.message);
     }
 }
