@@ -49,10 +49,11 @@ export async function shoppingCart(req, res){
 
 export async function getProductsShoppingCart(req, res){
     const {userId} = res.locals;
-
+    console.log(userId)
     try{
-        const products = await db.collection('shoppingCart').find({userId: new ObjectId(userId)}).toArray()
-        
+        const products = await db.collection('shoppingCart').find({userId}).toArray()
+        console.log(products)
+        if(products.length === 0) return res.send([])
         const myProducts = [];
         
         let i = 0;
@@ -61,11 +62,24 @@ export async function getProductsShoppingCart(req, res){
             myProducts.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}))
             i++
         } while(i < products.length);
-
+        console.log(myProducts)
         res.send(myProducts);
         
     }catch(err){
         res.status(500).send(err.message);
+    }
+}
+
+export async function deleteProductByCart(req, res){
+    const {id} = req.params;
+    const {userId} = res.locals;
+    console.log(userId)
+    try{
+        const d = await db.collection('shoppingCart').deleteOne({idProduct: id, userId})
+        console.log(d)
+        res.sendStatus(200);
+    }catch(err){
+        res.status(500).send(err.message)
     }
 }
 
@@ -90,11 +104,8 @@ export async function productsBoughtByYou(req, res){
             myBuys[i] = {...myBuys[i],info: boughtProducts[i]}
         }
 
-        console.log(myBuys);
-
         return res.send(myBuys);
     }catch(err){
-        console.log(err);
         res.status(500).send(err.message);
     }
 }
