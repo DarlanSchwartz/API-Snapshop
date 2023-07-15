@@ -35,12 +35,14 @@ export async function newBuy(req, res){
 export async function shoppingCart(req, res){
     const {userId} = res.locals;
     const idProduct = req.params.id;
+    const queryParams = req.query;
+    const quantity =  queryParams.quantity ? Number( queryParams.quantity) : 1;
 
     try{
         const product = await db.collection('products').findOne({_id: new ObjectId(idProduct)});
-        if(!product) return res.status(404).send("Porduto não encontrado no sistema! ):")
+        if(!product) return res.status(404).send("Produto não encontrado no sistema! ):")
 
-        await db.collection('shoppingCart').insertOne({userId, idProduct});
+        await db.collection('shoppingCart').insertOne({userId, idProduct, quantity});
         res.sendStatus(200);
     }catch(err){
         res.status(500).send(err.message);
@@ -49,24 +51,26 @@ export async function shoppingCart(req, res){
 
 export async function getProductsShoppingCart(req, res){
     const {userId} = res.locals;
-    console.log(userId)
     try{
-        const products = await db.collection('shoppingCart').find({userId}).toArray()
-        console.log(products)
-        if(products.length === 0) return res.send([])
+        const products = await db.collection('shoppingCart').find({userId}).toArray();
+        if(products.length === 0) return res.send([]);
         const myProducts = [];
         
         let i = 0;
         do{
-            const product = products[i]
-            myProducts.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}))
-            i++
+            const product = products[i];
+            myProducts.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}));
+            i++;
         } while(i < products.length);
-        console.log(myProducts)
-        res.send(myProducts);
+
+        for (let i = 0; i < products.length; i++) {
+            myProducts[i].quantity = products[i].quantity;
+        }
+        
+        return res.send(myProducts);
         
     }catch(err){
-        res.status(500).send(err.message);
+       return  res.status(500).send(err.message);
     }
 }
 
