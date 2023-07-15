@@ -61,7 +61,24 @@ export async function getUserInfo(req, res) {
     try {
         const userId = await db.collection("sessions").findOne({ token:authorization });
         const user = await db.collection('users').findOne({_id:userId.userId});
-        res.status(200).send({token:authorization,userName:user.name,photo:user.photo});
+        const products = await db.collection('shoppingCart').find({userId:userId.userId}).toArray();
+        const myProducts = [];
+        
+        if(products.length > 0)
+        {
+            let i = 0;
+            do{
+                const product = products[i];
+                myProducts.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}));
+                i++;
+            } while(i < products.length);
+
+            for (let i = 0; i < products.length; i++) {
+                myProducts[i].quantity = products[i].quantity;
+            }
+        }
+        
+        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo},items:myProducts});
     } catch (err) {
         res.status(500).send(err.message)
     }
