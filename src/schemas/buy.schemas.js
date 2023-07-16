@@ -13,5 +13,5 @@ export const newBuySchema = Joi.object({
    expiration: Joi.string(), 
    cvv: Joi.number(), 
    nameHolder: Joi.string(),
-   price:Joi.number()
+   price:Joi.number().positive()
 });
