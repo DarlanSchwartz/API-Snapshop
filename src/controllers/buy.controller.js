@@ -117,14 +117,18 @@ export async function productsBoughtByYou(req, res){
         
         let i = 0;
         do{
-            const product = boughtProducts[i]
-            myBuys.push(await db.collection('products').findOne({_id: new ObjectId(product.idProduct)}))
+            const buy = boughtProducts[i]
+            let j = 0;
+            do{
+                myBuys.push(await db.collection('products').findOne({_id: new ObjectId(buy.idProducts[j])}))
+                j++;
+            }while(j < buy.idProducts)
             i++
         } while(i < boughtProducts.length);
-
+        /*
         for (let i = 0; i < boughtProducts.length; i++) {
             myBuys[i] = {...myBuys[i],info: boughtProducts[i]}
-        }
+        }*/
 
         return res.send(myBuys);
     }catch(err){
