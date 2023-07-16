@@ -83,9 +83,22 @@ export async function getUserInfo(req, res) {
             }
         }
         
-        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo},items:myProducts,amountOfProducts});
+        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo, state:user.state, city:user.city, gender:user.gender},items:myProducts,amountOfProducts});
     } catch (err) {
         console.log(err);
+        res.status(500).send(err.message)
+    }
+}
+
+export async function EditUser(req, res){
+    const { state, city, gender, photo, name } = req.body
+    const authorization = req.headers.authorization;
+    const userId = await db.collection("sessions").findOne({ token:authorization });
+    const user = await db.collection('users').findOne({_id:userId.userId});
+    try{
+        await db.collection("users").updateOne({_id: user._id}, { $set: { state, city, gender, name, photo } })
+        res.sendStatus(201)
+    } catch{
         res.status(500).send(err.message)
     }
 }
