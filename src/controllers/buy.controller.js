@@ -110,26 +110,28 @@ export async function productsBoughtByYou(req, res){
     
 
     try{
-        const boughtProducts = await db.collection('buys').find({userId}).toArray()
-        if(boughtProducts.length == 0) return res.status(200).send(boughtProducts); 
+        const madePurchases = await db.collection('buys').find({userId}).toArray()
+        if(madePurchases.length == 0) return res.status(200).send(madePurchases); 
 
         const myBuys = [];
-        
+       
         let i = 0;
+        
         do{
-            const buy = boughtProducts[i]
-            let j = 0;
-            do{
-                myBuys.push(await db.collection('products').findOne({_id: new ObjectId(buy.idProducts[j])}))
-                j++;
-            }while(j < buy.idProducts)
-            i++
-        } while(i < boughtProducts.length);
-        /*
-        for (let i = 0; i < boughtProducts.length; i++) {
-            myBuys[i] = {...myBuys[i],info: boughtProducts[i]}
-        }*/
+            const buy = madePurchases[i];
 
+            let j = 0;
+
+            let buys = [];
+            
+            do{
+                const foundP = await db.collection('products').findOne({_id: new ObjectId(buy.idProducts[j])});
+                buys.push(foundP);
+                j++;
+            }while(j < buy.idProducts.length);
+            myBuys.push({buys:buys,info:madePurchases[i]});
+            i++
+        } while(i < madePurchases.length);
         return res.send(myBuys);
     }catch(err){
         console.log(err);
