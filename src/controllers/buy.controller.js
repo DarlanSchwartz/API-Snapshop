@@ -3,29 +3,36 @@ import db from '../database/database.connection.js';
 
 export async function newBuy(req, res){
     const {userId} = res.locals;
-    const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder,price} = req.body;
-    const idProduct = req.params.id;
+    const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder, price, idProducts} = req.body;
+    //const idProduct = req.params.id;
     
     try{
-        const product = await db.collection('products').findOne({_id: new ObjectId(idProduct)});
+        let i = 0;
+        do{
+            const idProduct = idProducts[i]
+            const product = await db.collection('products').findOne({_id: new ObjectId(idProduct)});
 
-        if(!product) return res.status(404).send("Porduto não encontrado no sistema! ):")
-       
-        const rest = product.stock - Number(amount);
+            if(!product) return res.status(404).send("Produto não encontrado no sistema! ):")
 
-        if(rest < 0) return res.status(401).send("A quantidade requerida excede o estoque!!!")
-        
-        if(rest === 0){
-            await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {available: false, stock: 0}});
-        }else{
-            await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {stock: rest}});
-        }
+            const rest = product.stock - Number(amount[i]);
+
+            if(rest < 0) return res.status(401).send("A quantidade requerida excede o estoque!!!")
+            
+            if(rest === 0){
+                await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {available: false, stock: 0}});
+            }else{
+                await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {stock: rest}});
+            }
+            
+            i++;
+        }while(i < idProducts.length);
+
         if(paymentMethod === 'pix' || paymentMethod === 'boleto'){
-            await db.collection('buys').insertOne({userId, idProduct, amount,price, cep, city, neighborhood, state, street, number, paymentMethod});
+            await db.collection('buys').insertOne({userId, idProducts, amount,price, cep, city, neighborhood, state, street, number, paymentMethod});
         }else{
-            await db.collection('buys').insertOne({userId, idProduct, amount, price, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder});
+            await db.collection('buys').insertOne({userId, idProducts, amount, price, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder});
         }
-        
+          
         res.sendStatus(200);
     }catch(err){
         res.status(500).send(err.message);

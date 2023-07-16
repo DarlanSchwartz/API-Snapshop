@@ -6,7 +6,7 @@ import { newBuySchema } from "../schemas/buy.schemas.js";
 
 const buyRouter = Router();
 
-buyRouter.post('/comprar/:id', validateAuth, validateSchema(newBuySchema), newBuy);
+buyRouter.post('/comprar', validateAuth, validateSchema(newBuySchema), newBuy);
 buyRouter.post('/carrinho/:id', validateAuth, shoppingCart);
 buyRouter.get('/carrinho', validateAuth, getProductsShoppingCart);
 buyRouter.delete('/carrinho/:id', validateAuth, deleteProductByCart);
