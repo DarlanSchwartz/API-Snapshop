@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 import db from '../database/database.connection.js';
 
-export async function newBuy(req, res){
+export async function newBuy(req, res, next){
     const {userId} = res.locals;
     const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder, price, idProducts} = req.body;
-    //const idProduct = req.params.id;
+    const productsEmail = {names: [], total : 0};
     
     try{
         let i = 0;
@@ -24,6 +24,9 @@ export async function newBuy(req, res){
                 await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {stock: rest}});
             }
             
+            productsEmail.names.push(product.name);
+            productsEmail.total += product.value;
+
             i++;
         }while(i < idProducts.length);
 
@@ -32,8 +35,10 @@ export async function newBuy(req, res){
         }else{
             await db.collection('buys').insertOne({userId, idProducts, amount, price, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder});
         }
-          
-        res.sendStatus(200);
+
+        res.locals.products = productsEmail;
+        next();
+
     }catch(err){
         console.log(err);
         return res.status(500).send(err.message);
@@ -94,10 +99,21 @@ export async function getProductsShoppingCart(req, res){
 export async function deleteProductByCart(req, res){
     const {id} = req.params;
     const {userId} = res.locals;
-    console.log(userId)
     try{
         const d = await db.collection('shoppingCart').deleteOne({idProduct: id, userId})
         console.log(d)
+        return res.sendStatus(200);
+    }catch(err){
+        console.log(err);
+        return res.status(500).send(err.message)
+    }
+}
+
+export async function deleteCart(req, res){
+    const {userId} = res.locals;
+
+    try{
+        const d = await db.collection('shoppingCart').deleteMany({userId})
         return res.sendStatus(200);
     }catch(err){
         console.log(err);
