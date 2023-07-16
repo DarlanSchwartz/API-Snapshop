@@ -1,7 +1,8 @@
 import Joi from "joi";
 
 export const newBuySchema = Joi.object({
-   amount: Joi.number().positive().required(),
+   amount: Joi.array().required(),
+   idProducts: Joi.array().required(),
    cep: Joi.number().required(), 
    city: Joi.string().required(), 
    neighborhood: Joi.string().required(), 
