@@ -85,7 +85,7 @@ export async function getUserInfo(req, res) {
             }
         }
         
-        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo},items:myProducts,amountOfProducts});
+        return res.status(200).send({user:{token:authorization,userName:user.name,photo:user.photo,email:user.email},items:myProducts,amountOfProducts});
     } catch (err) {
         console.log(err);
         res.status(500).send(err.message)
