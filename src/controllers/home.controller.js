@@ -19,3 +19,13 @@ export async function getAllProducts(req, res) {
         return res.status(500).send('Internal server error');
     }
 }
+
+export async function getAmountOfProducst(req, res) {
+   try {
+        const amountOfProducts = (await db.collection('products').find().toArray()).length;
+        return res.status(200).send({amount:amountOfProducts});
+   } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+   }
+}
