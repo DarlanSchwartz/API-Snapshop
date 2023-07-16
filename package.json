@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/RayAra2004/projeto15-snapshop-back#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.9",
