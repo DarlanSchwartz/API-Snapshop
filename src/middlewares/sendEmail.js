@@ -22,7 +22,7 @@ export async function sendEmail(req, res){
     const emailHtml = `<!DOCTYPE html>
     <html>
     <head>
-        <title>Compra Realizada com Sucesso</title>
+        <title>Compra Realizada com Sucesso!</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
