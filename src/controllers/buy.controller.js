@@ -4,8 +4,8 @@ import db from '../database/database.connection.js';
 export async function newBuy(req, res, next){
     const {userId} = res.locals;
     const {amount, cep, city, neighborhood, state, street, number, paymentMethod, cardNumber, expiration, cvv, nameHolder, price, idProducts} = req.body;
-    const productsEmail = {names: [], total : 0};
-    
+    const productsEmail = {names: [], total : price, adress: `${street} ${number} - ${neighborhood} - ${city},${state}`};
+
     try{
         let i = 0;
         do{
@@ -24,11 +24,12 @@ export async function newBuy(req, res, next){
                 await db.collection('products').updateOne({_id: new ObjectId(idProduct)}, {$set: {stock: rest}});
             }
             
-            productsEmail.names.push(product.name);
-            productsEmail.total += product.value;
+            productsEmail.names.push(product.name + ' x' + amount[i]);
 
             i++;
         }while(i < idProducts.length);
+
+       
 
         if(paymentMethod === 'pix' || paymentMethod === 'boleto'){
             await db.collection('buys').insertOne({userId, idProducts, amount,price, cep, city, neighborhood, state, street, number, paymentMethod});

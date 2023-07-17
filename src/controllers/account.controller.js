@@ -32,7 +32,6 @@ export async function signIn(req, res){
         if (!isPasswordCorrect) return res.status(401).send("Senha incorreta! Tente novamente")
         const secret = process.env.JWT_SECRET;
         const token = jwt.sign(req.body, secret);
-        console.log(token);
         await db.collection("sessions").insertOne({ token, userId: user._id })
 
         res.send({ token, userName: user.name, photo: user.photo})
