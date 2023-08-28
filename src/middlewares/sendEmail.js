@@ -69,18 +69,15 @@ export async function sendEmail(req, res){
 `
 
     const msg = {
-    to: user.email, // Change to your recipient
-    from: 'noreply.snapshop@gmail.com', // Change to your verified sender
-    subject: 'SnapShop - Compra realizada com sucesso',
-    text: 'hhhh',
-    html: emailHtml.replace("'",""),
+        to: user.email,
+        from: process.env.SENDER_EMAIL,
+        subject: 'SnapShop - Compra realizada com sucesso',
+        text: 'hhhh',
+        html: emailHtml.replace("'",""),
     }
 
-    sgMail
-    .send(msg)
+    sgMail.send(msg)
     .then((response) => {
-        // console.log(response[0].statusCode)
-        // console.log(response[0].headers)
         res.sendStatus(200);
     })
     .catch((error) => {
